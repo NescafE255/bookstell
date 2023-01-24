@@ -1,6 +1,7 @@
 program booktell;
 
 type
+    rec = ^myrecord;
     myrecord = record
         firstN, lastN: string;
         numberTell: int64;
@@ -117,69 +118,80 @@ begin
 end;
 
 
+
 procedure SortArrayLast();
 var
-    arr: Array[1..100] of string;
-    z: myrecord;
+    arr: Array of rec;
+    z: rec;
     i, j: byte; 
     used_elements: integer;
-    s: string;
+    tmp: rec;
 
 begin
-
 
     if filesize(tfile) = 0 then
     begin
         writeln('Телефонна книга пуста!');
         exit;
     end;
-
     used_elements := 0;
     seek(tfile, 0);
-    AddListed;
-
-    while list <> Nil do
+    // AddListed;
+    SetLength(arr, filesize(tfile));
+    while not eof(tfile) do
     begin
-        writeln(list^.date.lastN);
-        list := list^.next;
+        new(z);
+        read(tfile, z^);
+        arr[used_elements + 1] := z;
+        inc(used_elements)
     end;
 
-    while list <> Nil do
-        begin
-            arr[used_elements + 1] := list^.date.lastN; // LowerCase(z.lastN);
-            inc(used_elements);
-            list := list^.next;
-        end;
     
+    // while list <> Nil do
+    //     begin
+    //         arr[used_elements + 1] := list; // LowerCase(z.lastN);
+    //         inc(used_elements);
+    //         list := list^.next;
+    //     end;
+    
+
+
     for i:= 1 to used_elements-1 do
         for j:= 1 to used_elements-i do
         begin
-            if arr[j] > arr[j+1] then 
+            if arr[j]^.lastN > arr[j+1]^.lastN then 
             begin
-                s := arr[j];
+                tmp := arr[j];
                 arr[j] := arr[j+1];
-                arr[j+1] := s;
+                arr[j+1] := tmp;
             end;
         end;
     
 
 
-    
-    // for i := 1 to used_elements do
-    //     writeln(arr[i]);
+    // while tmp <> Nil do
+    // begin
+    //     writeln(tmp^.date.lastN);
+    //     tmp := tmp^.next;
+    // end;
+
+    for i := 1 to used_elements do
+    begin
+        writeln(arr[i]^.lastN, ' ', arr[i]^.firstN,' ' ,' +380' ,arr[i]^.numberTell);
+        Dispose(arr[i]);
+    end;
 
     // //Чому тут просто не вивести масив? Не бачу сенсу вичитувати файлик знову
     // //Трохи криво
-    for i := 1 to used_elements do
-    begin
-        while list <> Nil do
-        begin
-            if arr[i] = list^.date.lastN then
-                writeln(list^.date.lastN, ' ', list^.date.firstN, ' ', '+380', list^.date.numberTell);
-            // writeln(list^.date.firstN);
-            list := list^.next;
-        end;
-    end; 
+    // for i := 1 to used_elements do
+    //     while tmp <> Nil do
+    //     begin
+    //         if arr[i] = tmp^.date.lastN then
+    //             writeln(tmp^.date.lastN, ' ', tmp^.date.firstN, ' ', '+380', tmp^.date.numberTell);
+    //         // writeln(list^.date.firstN);
+    //         tmp := tmp^.next;
+    //     end;
+
     
 end;
 
