@@ -98,18 +98,6 @@ begin
 end;
 
 
-// function LenContakts(): integer;
-// begin
-//     while not eof(tfile) do
-//     begin
-//         read(tfile, zapis);
-//         pos := filepos(tfile);
-//     end;
-//     LenContakts := pos;
-//     // writeln(LenContakts);
-// end;
-
-
 procedure AddContakt();
 var 
     z: myrecord;
@@ -150,7 +138,7 @@ begin
     while not eof(tfile) do
     begin
         read(tfile, z);
-        arr[used_elements + 1] := LowerCase(z.lastN);
+        arr[used_elements + 1] := LowerCase(z.lastN); //list^.date.lastN;
         inc(used_elements);
     end;
     
