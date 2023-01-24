@@ -11,8 +11,7 @@ type
 
     listed = ^ptr;
     ptr = record
-        firstN, lastN: string;
-        numberTell: int64;
+        date: myrecord;
         next: listed;
     end;
 
@@ -20,27 +19,27 @@ var
     tfile: file of myrecord;
     zapis: myrecord;
     vibor: integer;
-    queue: listed;
+    list: listed;
 
 //Щось тут не то. В Черзі у нас був вказівник на початок і вказівник на кінець черги.
 //Тут походу має бути список а не черга. List
-procedure QueuePut(var queue: listed);
+procedure QueuePut(var list: listed);
 var
     first ,tmp: listed;
 begin
     new(first);
-    first^.firstN := zapis.firstN;
-    first^.lastN := zapis.lastN;
-    first^.numberTell := zapis.numberTell;
+    first^.date.firstN := zapis.firstN;
+    first^.date.lastN := zapis.lastN;
+    first^.date.numberTell := zapis.numberTell;
     first^.next := Nil;
 
-    if queue = Nil then
+    if list = Nil then
     begin
-        queue := first;
+        list := first;
         exit;
     end;
 
-    tmp := queue;
+    tmp := list;
     while tmp^.next <> Nil do
     begin
         tmp := tmp^.next;
@@ -57,13 +56,13 @@ var
 begin
 
 
-    if queue = Nil then
+    if list = Nil then
     begin
         // writeln('List is empaty!');
         exit;
     end;   
 
-    temp := queue;
+    temp := list;
     current := Nil;
     a := 0;
   
@@ -73,7 +72,7 @@ begin
         begin
             if current = Nil then
             begin
-                queue := temp^.next;
+                list := temp^.next;
             end else begin
                 current^.next := temp^.next;
             end;
@@ -101,7 +100,7 @@ begin
     begin
         read(tfile, zapis);
         // writeln(zapis.firstN, ' ', zapis.lastN, ' ', zapis.numberTell);
-        QueuePut(queue);
+        QueuePut(list);
     end;
 end;
 
@@ -223,19 +222,19 @@ begin
     DelletMi(pos-1);
 
     rewrite(tfile);
-    while queue <> Nil do
+    while list <> Nil do
     begin
         with z do
         begin
 	    //Ми повинні кожен раз копіювати елементи поокремо. Якщо ми до контактів додамо нове поле
 	    //Наприклад Други номер, то прийдеться всюди шукати такі місця в коді як тут і їх виправляти
 	    //Треба подумати як це обійти (це стосується коменту про дублювання даних з початку файла)
-            lastN := queue^.lastN;
-            firstN := queue^.firstN;
-            numberTell := queue^.numberTell;
+            lastN := list^.date.lastN;
+            firstN := list^.date.firstN;
+            numberTell := list^.date.numberTell;
         end;
         write(tfile, z);
-        queue := queue^.next;
+        list := list^.next;
     end;
     
 
