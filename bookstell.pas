@@ -133,14 +133,23 @@ begin
         writeln('Телефонна книга пуста!');
         exit;
     end;
+
     used_elements := 0;
     seek(tfile, 0);
-    while not eof(tfile) do
+    AddListed;
+
+    while list <> Nil do
     begin
-        read(tfile, z);
-        arr[used_elements + 1] := LowerCase(z.lastN); //list^.date.lastN;
-        inc(used_elements);
+        writeln(list^.date.lastN);
+        list := list^.next;
     end;
+
+    while list <> Nil do
+        begin
+            arr[used_elements + 1] := list^.date.lastN; // LowerCase(z.lastN);
+            inc(used_elements);
+            list := list^.next;
+        end;
     
     for i:= 1 to used_elements-1 do
         for j:= 1 to used_elements-i do
@@ -152,18 +161,23 @@ begin
                 arr[j+1] := s;
             end;
         end;
+    
 
 
-    //Чому тут просто не вивести масив? Не бачу сенсу вичитувати файлик знову
-    //Трохи криво
-    for i:=1 to used_elements do
+    
+    // for i := 1 to used_elements do
+    //     writeln(arr[i]);
+
+    // //Чому тут просто не вивести масив? Не бачу сенсу вичитувати файлик знову
+    // //Трохи криво
+    for i := 1 to used_elements do
     begin
-        seek(tfile, 0);
-            while not eof(tfile) do
+        while list <> Nil do
         begin
-            read(tfile, z);
-            if LowerCase(z.lastN) = arr[i] then
-                writeln(z.lastN, ' ', z.firstN, ' ', '+380', z.numberTell)
+            if arr[i] = list^.date.lastN then
+                writeln(list^.date.lastN, ' ', list^.date.firstN, ' ', '+380', list^.date.numberTell);
+            // writeln(list^.date.firstN);
+            list := list^.next;
         end;
     end; 
     
