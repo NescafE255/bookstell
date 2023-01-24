@@ -1,9 +1,6 @@
 program booktell;
 
 type
-    //Повторення даних! ПОГАНО! Треба подумати як позбуватися дублювання структур!
-    
-    
     myrecord = record
         firstN, lastN: string;
         numberTell: int64;
@@ -21,9 +18,7 @@ var
     vibor: integer;
     list: listed;
 
-//Щось тут не то. В Черзі у нас був вказівник на початок і вказівник на кінець черги.
-//Тут походу має бути список а не черга. List
-procedure QueuePut(var list: listed);
+procedure ListPut(var list: listed);
 var
     first ,tmp: listed;
 begin
@@ -47,9 +42,7 @@ begin
     tmp^.next := first;
 end;
 
-//Premature optimization is a root of all evel
-//Чому byte? integer цілком підходить
-procedure DelletMi (x: byte);
+procedure DelletMi (x: integer);
 var 
     temp, current: listed;
     a: byte;
@@ -100,7 +93,7 @@ begin
     begin
         read(tfile, zapis);
         // writeln(zapis.firstN, ' ', zapis.lastN, ' ', zapis.numberTell);
-        QueuePut(list);
+        ListPut(list);
     end;
 end;
 
