@@ -16,12 +16,12 @@ type
 var
     tfile: file of myrecord;
     zapis: myrecord;
-    vibor: integer;
+    choice: integer;
     list: listed;
 
 procedure ListPut(var list: listed);
 var
-    first ,tmp: listed;
+    first, tmp: listed;
 begin
     new(first);
     first^.date.firstN := zapis.firstN;
@@ -93,7 +93,6 @@ begin
     while not eof(tfile) do
     begin
         read(tfile, zapis);
-        // writeln(zapis.firstN, ' ', zapis.lastN, ' ', zapis.numberTell);
         ListPut(list);
     end;
 end;
@@ -128,15 +127,14 @@ var
     tmp: rec;
 
 begin
-
     if filesize(tfile) = 0 then
     begin
         writeln('Телефонна книга пуста!');
         exit;
     end;
+
     used_elements := 0;
     seek(tfile, 0);
-    // AddListed;
     SetLength(arr, filesize(tfile));
     while not eof(tfile) do
     begin
@@ -145,16 +143,6 @@ begin
         arr[used_elements + 1] := z;
         inc(used_elements)
     end;
-
-    
-    // while list <> Nil do
-    //     begin
-    //         arr[used_elements + 1] := list; // LowerCase(z.lastN);
-    //         inc(used_elements);
-    //         list := list^.next;
-    //     end;
-    
-
 
     for i:= 1 to used_elements-1 do
         for j:= 1 to used_elements-i do
@@ -167,31 +155,11 @@ begin
             end;
         end;
     
-
-
-    // while tmp <> Nil do
-    // begin
-    //     writeln(tmp^.date.lastN);
-    //     tmp := tmp^.next;
-    // end;
-
     for i := 1 to used_elements do
     begin
         writeln(arr[i]^.lastN, ' ', arr[i]^.firstN,' ' ,' +380' ,arr[i]^.numberTell);
         Dispose(arr[i]);
     end;
-
-    // //Чому тут просто не вивести масив? Не бачу сенсу вичитувати файлик знову
-    // //Трохи криво
-    // for i := 1 to used_elements do
-    //     while tmp <> Nil do
-    //     begin
-    //         if arr[i] = tmp^.date.lastN then
-    //             writeln(tmp^.date.lastN, ' ', tmp^.date.firstN, ' ', '+380', tmp^.date.numberTell);
-    //         // writeln(list^.date.firstN);
-    //         tmp := tmp^.next;
-    //     end;
-
     
 end;
 
@@ -201,22 +169,22 @@ var
     z: myrecord;
     search: int64;
     pos: integer;
-    prapor: boolean;
+    flag: boolean;
 begin
     write('Введіть номер: +380');
     readln(search);
     seek(tfile, 0);
-    prapor := False;
+    flag := False;
     while not eof(tfile) do
     begin
         read(tfile, z);
         if search = z.numberTell then
         begin
             pos := filepos(tfile);
-            prapor := True;
+            flag := True;
         end;
     end;
-    if prapor = False then
+    if flag = False then
     begin
         writeln('Номер не знайдено!');
         exit;
@@ -244,20 +212,6 @@ begin
         list := list^.next;
     end;
     
-
-
-    // if queue = Nil then
-    // begin
-    //     writeln('Empty!!!');
-    //     exit;
-    // end;
-
-    // while queue <> Nil do
-    // begin
-    //     writeln(queue^.lastN, ' ', queue^.numberTell);
-    //     queue := queue^.next;
-    // end;
-
 end;
 
 
@@ -277,7 +231,6 @@ begin
         read(tfile, z);
         writeln(z.firstN, ' ', z.lastN, ' ', '+380', z.numberTell);
     end;
-    // writeln(filepos(tfile));
 end;
 
 
@@ -333,7 +286,124 @@ begin
 end;
 
 
-//Код робочий і це пиздато. Загалом, я задоволений. Деякими моментами я вражений. Але пару косячків треба переробити
+procedure FilterLast();
+var 
+    arr: Array of rec;
+    z: rec;
+    tmp: string;
+    i, used_elements: integer;
+begin
+    readln(tmp);
+    seek(tfile, 0);
+    SetLength(arr, filesize(tfile));
+    used_elements := 0;
+    while not eof(tfile) do
+    begin
+        new(z);
+        read(tfile, z^);
+        arr[used_elements + 1] := z;
+        inc(used_elements);
+    end;
+
+    for i := 1 to used_elements do
+    begin
+        if pos(tmp, LowerCase(arr[i]^.lastN)) >= 1 then
+            writeln(arr[i]^.lastN, ' ', arr[i]^.firstN,' ' ,' +380' ,arr[i]^.numberTell)
+    end;    
+end;
+
+
+procedure FilterFirst();
+var 
+    arr: Array of rec;
+    z: rec;
+    tmp: string;
+    used_elements, i: integer;
+begin
+    readln(tmp);
+    seek(tfile, 0);
+    SetLength(arr, filesize(tfile));
+    used_elements := 0;
+    while not eof(tfile) do
+    begin
+        new(z);
+        read(tfile, z^);
+        arr[used_elements + 1] := z;
+        inc(used_elements);
+    end;
+
+
+    for i := 1 to used_elements do
+        if pos(tmp, LowerCase(arr[i]^.firstN)) >= 1 then
+            writeln(arr[i]^.firstN, ' ', arr[i]^.lastN,' ' ,' +380' ,arr[i]^.numberTell)
+
+end;
+
+
+// procedure FilterNumberTell();
+// var 
+//     arr: Array of rec;
+//     z: rec;
+//     tmp: int64;
+//     used_elements, i: integer;
+// begin
+//     readln(tmp);
+//     seek(tfile, 0);
+//     SetLength(arr, filesize(tfile));
+//     used_elements := 0;
+//     while not eof(tfile) do
+//     begin
+//         new(z);
+//         read(tfile, z^);
+//         arr[used_elements + 1] := z;
+//         inc(used_elements);
+//     end;
+
+//     for i := 1 to used_elements do
+//         if pos(tmp: integer; arr[i]^.numberTell: integer) >= 1 then
+//             writeln(arr[i]^.firstN, ' ', arr[i]^.lastN,' ' ,' +380' ,arr[i]^.numberTell)
+
+// end;
+
+
+procedure RanameLastName();
+var
+    z: myrecord;
+    _name: string; 
+    _name1: string;
+    pos: integer;
+begin
+    write('Введіть прізвище яке хочете перейменувати: ');
+    readln(_name);
+    seek(tfile, 0);
+    
+    while not eof(tfile) do 
+    begin
+
+        read(tfile, z);
+
+        if z.lastN = _name then
+        begin
+            writeln('Введіть нове прізвище: ');
+            read(_name1);
+            seek(tfile, filepos(tfile) -1);
+            z.lastN := _name1;
+            write(tfile, z);
+            // seek(tfile, 0);
+            exit;
+        end;
+        
+    end;
+
+    if _name <> z.lastN then
+    begin
+        writeln('Contact not found');
+        exit;
+    end;
+
+end;
+
+
 begin
     {$I-}
     assign(tfile, 'booksTell.txt');
@@ -351,14 +421,23 @@ begin
         writeln ('3: Показати контакт по номеру');
         writeln ('4: Сортувати за прізвищем');
         writeln ('5: Видалити за номером');
-        readln(vibor);
-        case vibor of            
+        writeln ('6: Фільтр Прізвищ');
+        writeln ('7: Фільтр Імен');
+        writeln ('8: Перейменувати контакт за прізвищем');
+        readln(choice);
+        case choice of            
             1: ShowContakt();
             2: AddContakt();
             3: SearchNumberTell();
             4: SortArrayLast();
             5: DellContakt();
+            6: FilterLast();
+            7: FilterFirst();
+            8: RanameLastName();
         end;
     end;
+
+
     close(tfile);
+
 end.
