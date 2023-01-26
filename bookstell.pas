@@ -290,7 +290,7 @@ procedure FilterLast();
 var 
     arr: Array of rec;
     z: rec;
-    tmp: string;
+    tmp, tmp1: string;
     i, used_elements: integer;
 begin
     readln(tmp);
@@ -305,65 +305,18 @@ begin
         inc(used_elements);
     end;
 
+
+
     for i := 1 to used_elements do
     begin
-        if pos(tmp, LowerCase(arr[i]^.lastN)) >= 1 then
+        Str(arr[i]^.numberTell, tmp1);
+
+        if pos(tmp, LowerCase(arr[i]^.lastN)) or 
+        pos(tmp, LowerCase(arr[i]^.firstN)) or 
+        pos(tmp, tmp1) >= 1  then
             writeln(arr[i]^.lastN, ' ', arr[i]^.firstN,' ' ,' +380' ,arr[i]^.numberTell)
     end;    
 end;
-
-
-procedure FilterFirst();
-var 
-    arr: Array of rec;
-    z: rec;
-    tmp: string;
-    used_elements, i: integer;
-begin
-    readln(tmp);
-    seek(tfile, 0);
-    SetLength(arr, filesize(tfile));
-    used_elements := 0;
-    while not eof(tfile) do
-    begin
-        new(z);
-        read(tfile, z^);
-        arr[used_elements + 1] := z;
-        inc(used_elements);
-    end;
-
-
-    for i := 1 to used_elements do
-        if pos(tmp, LowerCase(arr[i]^.firstN)) >= 1 then
-            writeln(arr[i]^.firstN, ' ', arr[i]^.lastN,' ' ,' +380' ,arr[i]^.numberTell)
-
-end;
-
-
-// procedure FilterNumberTell();
-// var 
-//     arr: Array of rec;
-//     z: rec;
-//     tmp: int64;
-//     used_elements, i: integer;
-// begin
-//     readln(tmp);
-//     seek(tfile, 0);
-//     SetLength(arr, filesize(tfile));
-//     used_elements := 0;
-//     while not eof(tfile) do
-//     begin
-//         new(z);
-//         read(tfile, z^);
-//         arr[used_elements + 1] := z;
-//         inc(used_elements);
-//     end;
-
-//     for i := 1 to used_elements do
-//         if pos(tmp: integer; arr[i]^.numberTell: integer) >= 1 then
-//             writeln(arr[i]^.firstN, ' ', arr[i]^.lastN,' ' ,' +380' ,arr[i]^.numberTell)
-
-// end;
 
 
 procedure RanameLastName();
@@ -371,7 +324,6 @@ var
     z: myrecord;
     _name: string; 
     _name1: string;
-    pos: integer;
 begin
     write('Введіть прізвище яке хочете перейменувати: ');
     readln(_name);
@@ -382,7 +334,7 @@ begin
 
         read(tfile, z);
 
-        if z.lastN = _name then
+        if z.lastN = or z.firstN = _name then
         begin
             writeln('Введіть нове прізвище: ');
             read(_name1);
@@ -408,7 +360,7 @@ begin
     {$I-}
     assign(tfile, 'booksTell.txt');
     reset(tfile);
-
+    write('dasdsasadds');
     if IOResult <> 0 then
     begin    
         rewrite(tfile);
@@ -421,9 +373,8 @@ begin
         writeln ('3: Показати контакт по номеру');
         writeln ('4: Сортувати за прізвищем');
         writeln ('5: Видалити за номером');
-        writeln ('6: Фільтр Прізвищ');
-        writeln ('7: Фільтр Імен');
-        writeln ('8: Перейменувати контакт за прізвищем');
+        writeln ('6: Фільтр');
+        writeln ('7: Перейменувати контакт за прізвищем');
         readln(choice);
         case choice of            
             1: ShowContakt();
@@ -432,8 +383,7 @@ begin
             4: SortArrayLast();
             5: DellContakt();
             6: FilterLast();
-            7: FilterFirst();
-            8: RanameLastName();
+            7: RanameLastName();
         end;
     end;
 
