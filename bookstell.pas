@@ -15,8 +15,7 @@ type
 
 var
     tfile: file of myrecord;
-    //rec наприклад. Транслітерація
-    zapis: myrecord;
+    _record: myrecord;
     choice: integer;
     list: listed;
 
@@ -25,12 +24,7 @@ var
     first, tmp: listed;
 begin
     new(first);
-    //Якщо ми додамо в структуру ще якийсь елемент (дату народження наприкла)
-    //то нам прийдеться тут робити зміни. А ми можемо забути і буде бага. Для того і поле date було додано
-    //first^.date = zapis не буде працювати?
-    first^.date.firstN := zapis.firstN;
-    first^.date.lastN := zapis.lastN;
-    first^.date.numberTell := zapis.numberTell;
+    first^.date := _record;
     first^.next := Nil;
 
     if list = Nil then
@@ -47,7 +41,7 @@ begin
     tmp^.next := first;
 end;
 
-procedure DelletMi (x: integer);
+procedure DelletMid (x: integer);
 var 
     temp, current: listed;
     a: byte;
@@ -84,8 +78,8 @@ begin
     writeln('В списку не достатньо елементів!')
 end;
 
-//Варто перейменувати
-procedure AddListed();
+
+procedure CompletingList();
 begin
 
     if eof(tfile) = True then
@@ -96,13 +90,13 @@ begin
 
     while not eof(tfile) do
     begin
-        read(tfile, zapis);
+        read(tfile, _record);
         ListPut(list);
     end;
 end;
 
-//Contact
-procedure AddContakt();
+
+procedure AddContact();
 var 
     z: myrecord;
 begin
@@ -159,6 +153,7 @@ begin
             end;
         end;
     //Винести в окрему функцію. Це є закінчена логічна операція. І постійно її писати не варіант
+    //Але в нас більше ніде не має Dispose.
     for i := 1 to used_elements do
     begin
         writeln(arr[i]^.lastN, ' ', arr[i]^.firstN,' ' ,' +380' ,arr[i]^.numberTell);
@@ -167,63 +162,49 @@ begin
     
 end;
 
-//Contact
-procedure DellContakt();
+
+procedure DellContact();
 var
     z: myrecord;
     search: int64;
     pos: integer;
-    //непотрібний флажок. Ти можеш перевіряти чи номер знайдений по pos
-    flag: boolean;
 begin
     write('Введіть номер: +380');
     readln(search);
     seek(tfile, 0);
-    flag := False;
     while not eof(tfile) do
     begin
         read(tfile, z);
         if search = z.numberTell then
         begin
             pos := filepos(tfile);
-            flag := True;
         end;
     end;
-    if flag = False then
+
+    if pos = 0 then
     begin
         writeln('Номер не знайдено!');
         exit;
     end;
 
     seek(tfile, 0);
-    //вартує перейменувати функцію, бо по назві не зрозуміло що вона робить
-    AddListed();
+    CompletingList();
     close(tfile);
 
-    //Mid має бути, треба перейменувати
-    DelletMi(pos-1);
+    DelletMid(pos-1);
 
     rewrite(tfile);
     while list <> Nil do
     begin
-        with z do
-        begin
-	    //Ми повинні кожен раз копіювати елементи поокремо. Якщо ми до контактів додамо нове поле
-	    //Наприклад Други номер, то прийдеться всюди шукати такі місця в коді як тут і їх виправляти
-	    //Треба подумати як це обійти (це стосується коменту про дублювання даних з початку файла)
-        //Комент досі актуальний. z = list^.date не буде працювати?
-            lastN := list^.date.lastN;
-            firstN := list^.date.firstN;
-            numberTell := list^.date.numberTell;
-        end;
+        z := list^.date;
         write(tfile, z);
         list := list^.next;
     end;
     
 end;
 
-//ShowContacts, бо ми виводимо всі контакти
-procedure ShowContakt();
+
+procedure ShowContacts();
 var 
     z: myrecord;
 begin
@@ -293,6 +274,8 @@ begin
     end;
 end;
 
+
+//чомусь не коректно працює з уккраїнською розкладкою!!
 //Не працює, треба розібратися
 procedure FilterLast();
 var 
@@ -319,15 +302,15 @@ begin
     begin
         Str(arr[i]^.numberTell, tmp1);
 
-        if pos(tmp, LowerCase(arr[i]^.lastN)) or 
-        pos(tmp, LowerCase(arr[i]^.firstN)) or 
+        if pos(LowerCase(tmp), LowerCase(arr[i]^.lastN)) or 
+        pos(LowerCase(tmp), LowerCase(arr[i]^.firstN)) or 
         pos(tmp, tmp1) >= 1  then
             writeln(arr[i]^.lastN, ' ', arr[i]^.firstN,' ' ,' +380' ,arr[i]^.numberTell)
     end;    
 end;
 
-//Rename
-procedure RanameLastName();
+
+procedure RenameLastName();
 var
     z: myrecord;
     _name: string; 
@@ -385,15 +368,15 @@ begin
         writeln ('7: Перейменувати контакт за прізвищем');
         readln(choice);
         case choice of            
-            1: ShowContakt();
-            2: AddContakt();
+            1: ShowContacts();
+            2: AddContact();
             3: SearchNumberTell();
             4: SortArrayLast();
-            5: DellContakt();
+            5: DellContact();
             6: FilterLast();
-            7: RanameLastName();
+            7: RenameLastName();
         end;
-        //writeln тут би пасував, аби всьо в купі не було на екрані
+        writeln
     end;
 
 
