@@ -115,6 +115,16 @@ begin
 end;
 
 
+procedure Output(var z: myrecord);
+begin
+    writeln(z.lastN, ' ', z.firstN, ' ', '+380', z.numberTell);
+end;
+
+procedure OutputArr(var arr: Array of rec; couter: integer);
+begin
+    writeln(arr[couter]^.lastN, ' ', arr[couter]^.firstN,' ' ,' +380' ,arr[couter]^.numberTell);
+end;
+
 
 procedure SortArrayLast();
 var
@@ -152,12 +162,10 @@ begin
                 arr[j+1] := tmp;
             end;
         end;
-    //Винести в окрему функцію. Це є закінчена логічна операція. І постійно її писати не варіант
-    //Але в нас більше ніде не має Dispose.
-    //В функцію вивести тільки сам вивід на екран. ЦИкл не обов'язково
+
     for i := 1 to used_elements do
     begin
-        writeln(arr[i]^.lastN, ' ', arr[i]^.firstN,' ' ,' +380' ,arr[i]^.numberTell);
+        OutputArr(arr, i);
         Dispose(arr[i]);
     end;
     
@@ -199,6 +207,7 @@ begin
     begin
         z := list^.date;
         write(tfile, z);
+        Dispose(list);
         list := list^.next;
     end;
     //Треба видалити всі контакти з списку  (Dispose), бо лишається зайва пам'ять, яку ми більше не використовуємо
@@ -217,10 +226,9 @@ begin
     writeln('Ваш список контактів:');
     seek(tfile, 0);
     while not eof(tfile) do
-        //Вивід на екран в окрему функцію
     begin
         read(tfile, z);
-        writeln(z.firstN, ' ', z.lastN, ' ', '+380', z.numberTell);
+        Output(z);
     end;
 end;
 
@@ -236,10 +244,9 @@ begin
     begin
         read(tfile, z);
         if z.lastN = tmp then
-        //Вивід на екран в окрему функцію
         begin
-            writeln(z.lastN, ' ', z.firstN, ' ', '+380', z.numberTell);
-            writeln(filepos(tfile));
+            Output(z);
+            // writeln(filepos(tfile));
             exit;
         end;  
     end;
@@ -264,9 +271,8 @@ begin
     begin
         read(tfile, z);
         if z.numberTell = tmp then
-        //Вивід на екран в окрему функцію
         begin
-            writeln(z.lastN, ' ', z.firstN, ' ', '+380', z.numberTell);
+            Output(z);
             exit;
         end;
     end;
@@ -297,18 +303,17 @@ begin
         inc(used_elements);
     end;
 
-
-
     for i := 1 to used_elements do
     begin
         Str(arr[i]^.numberTell, tmp1);
 
         if pos(LowerCase(tmp), LowerCase(arr[i]^.lastN)) or 
         pos(LowerCase(tmp), LowerCase(arr[i]^.firstN)) or 
-        //Вивід на екран в окрему функцію
         pos(tmp, tmp1) >= 1  then
-            writeln(arr[i]^.lastN, ' ', arr[i]^.firstN,' ' ,' +380' ,arr[i]^.numberTell)
-        //Всі елементи мають бути видалені, щоб пам'ять не пропадала (Dispose)
+        begin
+            OutputArr(arr, i);
+        end;
+        Dispose(arr[i]);
     end;    
 end;
 
@@ -335,7 +340,6 @@ begin
             seek(tfile, filepos(tfile) -1);
             z.lastN := _name1;
             write(tfile, z);
-            // seek(tfile, 0);
             exit;
         end;
         
@@ -357,8 +361,6 @@ begin
     if IOResult <> 0 then
     begin    
         rewrite(tfile);
-        //непотрібний рядок
-        writeln('File creat');
     end;
     while True do
     begin
