@@ -154,6 +154,7 @@ begin
         end;
     //Винести в окрему функцію. Це є закінчена логічна операція. І постійно її писати не варіант
     //Але в нас більше ніде не має Dispose.
+    //В функцію вивести тільки сам вивід на екран. ЦИкл не обов'язково
     for i := 1 to used_elements do
     begin
         writeln(arr[i]^.lastN, ' ', arr[i]^.firstN,' ' ,' +380' ,arr[i]^.numberTell);
@@ -200,7 +201,7 @@ begin
         write(tfile, z);
         list := list^.next;
     end;
-    
+    //Треба видалити всі контакти з списку  (Dispose), бо лишається зайва пам'ять, яку ми більше не використовуємо
 end;
 
 
@@ -216,6 +217,7 @@ begin
     writeln('Ваш список контактів:');
     seek(tfile, 0);
     while not eof(tfile) do
+        //Вивід на екран в окрему функцію
     begin
         read(tfile, z);
         writeln(z.firstN, ' ', z.lastN, ' ', '+380', z.numberTell);
@@ -234,6 +236,7 @@ begin
     begin
         read(tfile, z);
         if z.lastN = tmp then
+        //Вивід на екран в окрему функцію
         begin
             writeln(z.lastN, ' ', z.firstN, ' ', '+380', z.numberTell);
             writeln(filepos(tfile));
@@ -261,6 +264,7 @@ begin
     begin
         read(tfile, z);
         if z.numberTell = tmp then
+        //Вивід на екран в окрему функцію
         begin
             writeln(z.lastN, ' ', z.firstN, ' ', '+380', z.numberTell);
             exit;
@@ -274,9 +278,6 @@ begin
     end;
 end;
 
-
-//чомусь не коректно працює з уккраїнською розкладкою!!
-//Не працює, треба розібратися
 procedure FilterLast();
 var 
     arr: Array of rec;
@@ -304,8 +305,10 @@ begin
 
         if pos(LowerCase(tmp), LowerCase(arr[i]^.lastN)) or 
         pos(LowerCase(tmp), LowerCase(arr[i]^.firstN)) or 
+        //Вивід на екран в окрему функцію
         pos(tmp, tmp1) >= 1  then
             writeln(arr[i]^.lastN, ' ', arr[i]^.firstN,' ' ,' +380' ,arr[i]^.numberTell)
+        //Всі елементи мають бути видалені, щоб пам'ять не пропадала (Dispose)
     end;    
 end;
 
