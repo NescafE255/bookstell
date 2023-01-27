@@ -15,6 +15,7 @@ type
 
 var
     tfile: file of myrecord;
+    //rec наприклад. Транслітерація
     zapis: myrecord;
     choice: integer;
     list: listed;
@@ -24,6 +25,9 @@ var
     first, tmp: listed;
 begin
     new(first);
+    //Якщо ми додамо в структуру ще якийсь елемент (дату народження наприкла)
+    //то нам прийдеться тут робити зміни. А ми можемо забути і буде бага. Для того і поле date було додано
+    //first^.date = zapis не буде працювати?
     first^.date.firstN := zapis.firstN;
     first^.date.lastN := zapis.lastN;
     first^.date.numberTell := zapis.numberTell;
@@ -80,7 +84,7 @@ begin
     writeln('В списку не достатньо елементів!')
 end;
 
-
+//Варто перейменувати
 procedure AddListed();
 begin
 
@@ -97,7 +101,7 @@ begin
     end;
 end;
 
-
+//Contact
 procedure AddContakt();
 var 
     z: myrecord;
@@ -154,7 +158,7 @@ begin
                 arr[j+1] := tmp;
             end;
         end;
-    
+    //Винести в окрему функцію. Це є закінчена логічна операція. І постійно її писати не варіант
     for i := 1 to used_elements do
     begin
         writeln(arr[i]^.lastN, ' ', arr[i]^.firstN,' ' ,' +380' ,arr[i]^.numberTell);
@@ -163,12 +167,13 @@ begin
     
 end;
 
-
+//Contact
 procedure DellContakt();
 var
     z: myrecord;
     search: int64;
     pos: integer;
+    //непотрібний флажок. Ти можеш перевіряти чи номер знайдений по pos
     flag: boolean;
 begin
     write('Введіть номер: +380');
@@ -191,9 +196,11 @@ begin
     end;
 
     seek(tfile, 0);
+    //вартує перейменувати функцію, бо по назві не зрозуміло що вона робить
     AddListed();
     close(tfile);
 
+    //Mid має бути, треба перейменувати
     DelletMi(pos-1);
 
     rewrite(tfile);
@@ -204,6 +211,7 @@ begin
 	    //Ми повинні кожен раз копіювати елементи поокремо. Якщо ми до контактів додамо нове поле
 	    //Наприклад Други номер, то прийдеться всюди шукати такі місця в коді як тут і їх виправляти
 	    //Треба подумати як це обійти (це стосується коменту про дублювання даних з початку файла)
+        //Комент досі актуальний. z = list^.date не буде працювати?
             lastN := list^.date.lastN;
             firstN := list^.date.firstN;
             numberTell := list^.date.numberTell;
@@ -214,7 +222,7 @@ begin
     
 end;
 
-
+//ShowContacts, бо ми виводимо всі контакти
 procedure ShowContakt();
 var 
     z: myrecord;
@@ -285,7 +293,7 @@ begin
     end;
 end;
 
-
+//Не працює, треба розібратися
 procedure FilterLast();
 var 
     arr: Array of rec;
@@ -318,7 +326,7 @@ begin
     end;    
 end;
 
-
+//Rename
 procedure RanameLastName();
 var
     z: myrecord;
@@ -334,7 +342,7 @@ begin
 
         read(tfile, z);
 
-        if z.lastN = or z.firstN = _name then
+        if (z.lastN = _name) or (z.firstN = _name) then
         begin
             writeln('Введіть нове прізвище: ');
             read(_name1);
@@ -360,10 +368,10 @@ begin
     {$I-}
     assign(tfile, 'booksTell.txt');
     reset(tfile);
-    write('dasdsasadds');
     if IOResult <> 0 then
     begin    
         rewrite(tfile);
+        //непотрібний рядок
         writeln('File creat');
     end;
     while True do
@@ -385,6 +393,7 @@ begin
             6: FilterLast();
             7: RanameLastName();
         end;
+        //writeln тут би пасував, аби всьо в купі не було на екрані
     end;
 
 
