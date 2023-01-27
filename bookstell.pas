@@ -342,11 +342,7 @@ begin
 
         read(tfile, z);
 
-<<<<<<< Updated upstream
-        if (z.lastN = _name) or (z.firstN = _name) then
-=======
         if z.lastN = _name then
->>>>>>> Stashed changes
         begin
             writeln('Введіть нове прізвище: ');
             read(_name1);
