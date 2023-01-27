@@ -120,6 +120,7 @@ begin
     writeln(z.lastN, ' ', z.firstN, ' ', '+380', z.numberTell);
 end;
 
+//Чим ця функція відрізняється від попередньої?
 procedure OutputArr(var arr: Array of rec; couter: integer);
 begin
     writeln(arr[couter]^.lastN, ' ', arr[couter]^.firstN,' ' ,' +380' ,arr[couter]^.numberTell);
@@ -165,6 +166,7 @@ begin
 
     for i := 1 to used_elements do
     begin
+        //Output(arr[i]) не канає?
         OutputArr(arr, i);
         Dispose(arr[i]);
     end;
@@ -210,7 +212,6 @@ begin
         Dispose(list);
         list := list^.next;
     end;
-    //Треба видалити всі контакти з списку  (Dispose), бо лишається зайва пам'ять, яку ми більше не використовуємо
 end;
 
 
@@ -311,6 +312,7 @@ begin
         pos(LowerCase(tmp), LowerCase(arr[i]^.firstN)) or 
         pos(tmp, tmp1) >= 1  then
         begin
+           //Output(arr[i]) не канає?
             OutputArr(arr, i);
         end;
         Dispose(arr[i]);
