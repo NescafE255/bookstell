@@ -41,6 +41,7 @@ begin
     tmp^.next := first;
 end;
 
+
 procedure DelletMid (x: integer);
 var 
     temp, current: listed;
@@ -115,15 +116,9 @@ begin
 end;
 
 
-procedure Output(var z: myrecord);
+procedure Output(var _rec: rec);
 begin
-    writeln(z.lastN, ' ', z.firstN, ' ', '+380', z.numberTell);
-end;
-
-//Чим ця функція відрізняється від попередньої?
-procedure OutputArr(var arr: Array of rec; couter: integer);
-begin
-    writeln(arr[couter]^.lastN, ' ', arr[couter]^.firstN,' ' ,' +380' ,arr[couter]^.numberTell);
+    writeln(_rec^.lastN, ' ', _rec^.firstN, ' ', '+380', _rec^.numberTell);
 end;
 
 
@@ -166,8 +161,8 @@ begin
 
     for i := 1 to used_elements do
     begin
-        //Output(arr[i]) не канає?
-        OutputArr(arr, i);
+        // Output(arr[i]);
+        writeln(arr[i]^.lastN, ' ', arr[i]^.firstN, ' ', '+380', arr[i]^.numberTell);
         Dispose(arr[i]);
     end;
     
@@ -229,7 +224,8 @@ begin
     while not eof(tfile) do
     begin
         read(tfile, z);
-        Output(z);
+        writeln(z.lastN, ' ', z.firstN, ' ', '+380', z.numberTell);
+        Output(@z);
     end;
 end;
 
@@ -246,7 +242,8 @@ begin
         read(tfile, z);
         if z.lastN = tmp then
         begin
-            Output(z);
+            // Output(z);
+            writeln(z.lastN, ' ', z.firstN, ' ', '+380', z.numberTell);
             // writeln(filepos(tfile));
             exit;
         end;  
@@ -273,7 +270,8 @@ begin
         read(tfile, z);
         if z.numberTell = tmp then
         begin
-            Output(z);
+            // Output(z);
+            writeln(z.lastN, ' ', z.firstN, ' ', '+380', z.numberTell);
             exit;
         end;
     end;
@@ -285,17 +283,20 @@ begin
     end;
 end;
 
-procedure FilterLast();
+procedure Filter();
 var 
     arr: Array of rec;
     z: rec;
-    tmp, tmp1: string;
+    tmp, com: string; 
+    tmp1: string;
     i, used_elements: integer;
 begin
-    readln(tmp);
+    writeln('Пошук');
+    // readln(com);
     seek(tfile, 0);
     SetLength(arr, filesize(tfile));
     used_elements := 0;
+    tmp := '';
     while not eof(tfile) do
     begin
         new(z);
@@ -304,19 +305,28 @@ begin
         inc(used_elements);
     end;
 
-    for i := 1 to used_elements do
+    while True do
     begin
-        Str(arr[i]^.numberTell, tmp1);
+        readln(com);
+        tmp := tmp + com;
+        writeln(tmp);
 
-        if pos(LowerCase(tmp), LowerCase(arr[i]^.lastN)) or 
-        pos(LowerCase(tmp), LowerCase(arr[i]^.firstN)) or 
-        pos(tmp, tmp1) >= 1  then
+        for i := 1 to used_elements do
         begin
-           //Output(arr[i]) не канає?
-            OutputArr(arr, i);
-        end;
-        Dispose(arr[i]);
-    end;    
+            Str(arr[i]^.numberTell, tmp1);
+
+            if pos(LowerCase(tmp), LowerCase(arr[i]^.lastN)) or 
+            pos(LowerCase(tmp), LowerCase(arr[i]^.firstN)) or 
+            pos(tmp, tmp1) >= 1  then
+            begin
+                Output(arr[i]);
+                // writeln(arr[i]^.lastN, ' ', arr[i]^.firstN, ' ', '+380', arr[i]^.numberTell);
+            end;
+                
+
+        end;    
+            // Dispose(arr[i]);
+    end;
 end;
 
 
@@ -380,7 +390,7 @@ begin
             3: SearchNumberTell();
             4: SortArrayLast();
             5: DellContact();
-            6: FilterLast();
+            6: Filter();
             7: RenameLastName();
         end;
         writeln
